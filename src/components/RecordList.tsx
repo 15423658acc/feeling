@@ -88,9 +88,9 @@ function RecordList() {
         const tags = []
         const mt = moodText(e)
         const wt = weatherText(e)
-        if (mt) tags.push(<span key="mood" className="entry-tag mood-tag">心情·{mt}</span>)
-        if (wt) tags.push(<span key="weather" className="entry-tag weather-tag">天气·{wt}</span>)
-        if (e.weekday) tags.push(<span key="weekday" className="entry-tag weekday-tag">周{e.weekday}</span>)
+        if (mt) tags.push(<span key="mood" className="entry-tag mood-tag">{mt}</span>)
+        if (wt) tags.push(<span key="weather" className="entry-tag weather-tag">{wt}</span>)
+        if (e.weekday) tags.push(<span key="weekday" className="entry-tag weekday-tag">{e.weekday}</span>)
         if (e.tags.length > 0) tags.push(<span key="tagscount" className="entry-tag count-tag">{e.tags.length}个标签</span>)
 
         return (
@@ -119,9 +119,9 @@ function RecordList() {
             <div className="modal-time">{formatTime(active.createdAt)}</div>
 
             <div className="modal-tags">
-              {moodText(active) && <span className="entry-tag mood-tag">心情·{moodText(active)}</span>}
-              {weatherText(active) && <span className="entry-tag weather-tag">天气·{weatherText(active)}</span>}
-              {active.weekday && <span className="entry-tag weekday-tag">周{active.weekday}</span>}
+              {moodText(active) && <span className="entry-tag mood-tag">{moodText(active)}</span>}
+              {weatherText(active) && <span className="entry-tag weather-tag">{weatherText(active)}</span>}
+              {active.weekday && <span className="entry-tag weekday-tag">{active.weekday}</span>}
             </div>
 
             {active.content
