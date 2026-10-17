@@ -50,8 +50,14 @@ function BackupBar() {
 
   return (
     <div className="backup-bar">
-      <button className="backup-btn" onClick={handleExport}>导出备份</button>
-      <button className="backup-btn" onClick={() => fileRef.current?.click()}>导入备份</button>
+      <button className="backup-btn backup-export" onClick={handleExport}>
+        <span className="backup-icon">⬇</span>
+        <span className="backup-label">导出备份</span>
+      </button>
+      <button className="backup-btn backup-import" onClick={() => fileRef.current?.click()}>
+        <span className="backup-icon">⬆</span>
+        <span className="backup-label">导入备份</span>
+      </button>
       <input
         ref={fileRef}
         type="file"

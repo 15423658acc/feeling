@@ -3,6 +3,7 @@ export interface Entry {
   createdAt: number
   mood: string
   weather: string
+  weekday: string
   content: string
   tags: string[]
 }

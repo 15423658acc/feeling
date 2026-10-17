@@ -25,10 +25,21 @@ const WEATHERS = [
   { emoji: '💨', label: '大风' }
 ]
 
+// 星期选项：一 二 三 四 五 六 日
+const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日']
+
+// 取今天的星期对应 WEEKDAYS 的下标（周日=6 周一=0）
+function getTodayWeekday(): string {
+  const day = new Date().getDay() // 0=周日 1=周一 … 6=周六
+  const idx = (day + 6) % 7       // 周日映射到 6，周一映射到 0
+  return WEEKDAYS[idx]
+}
+
 function RecordForm() {
   const tags = useLiveQuery(() => db.tags.orderBy('id').toArray(), [])
   const [mood, setMood] = useState('')
   const [weather, setWeather] = useState('')
+  const [weekday, setWeekday] = useState<string>(getTodayWeekday())
   const [content, setContent] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [flash, setFlash] = useState(false)
@@ -42,27 +53,27 @@ function RecordForm() {
   const canSubmit = content.trim().length > 0 || mood.length > 0
 
   const handleSubmit = async () => {
-    if (!canSubmit) return
+    if (!canSubmit || flash) return
     const entry: Entry = {
       createdAt: Date.now(),
       mood,
       weather,
+      weekday,
       content: content.trim(),
       tags: selectedTags
     }
     await db.entries.add(entry)
     setMood('')
     setWeather('')
+    setWeekday(getTodayWeekday())
     setContent('')
     setSelectedTags([])
     setFlash(true)
-    setTimeout(() => setFlash(false), 1800)
+    setTimeout(() => setFlash(false), 3000)
   }
 
   return (
     <div className="form-wrap">
-      {flash && <div className="flash">已记录 ✦</div>}
-
       <section className="field-group">
         <label className="field-label">心情</label>
         <div className="picker">
@@ -74,6 +85,21 @@ function RecordForm() {
             >
               <span className="emoji">{m.emoji}</span>
               <span className="chip-text">{m.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="field-group">
+        <label className="field-label">星期</label>
+        <div className="picker weekday-picker">
+          {WEEKDAYS.map(d => (
+            <button
+              key={d}
+              className={`chip weekday-chip ${weekday === d ? 'selected' : ''}`}
+              onClick={() => setWeekday(d)}
+            >
+              {d}
             </button>
           ))}
         </div>
@@ -125,8 +151,12 @@ function RecordForm() {
         </section>
       )}
 
-      <button className="submit-btn" onClick={handleSubmit} disabled={!canSubmit}>
-        记录此刻
+      <button
+        className={`submit-btn ${flash ? 'recorded' : ''}`}
+        onClick={handleSubmit}
+        disabled={!canSubmit || flash}
+      >
+        {flash ? '已记录 ✦' : '记录此刻'}
       </button>
     </div>
   )
