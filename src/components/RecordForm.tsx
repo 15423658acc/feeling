@@ -45,10 +45,16 @@ function RecordForm() {
   const [flash, setFlash] = useState(false)
 
   const toggleTag = (name: string) => {
-    setSelectedTags(prev =>
-      prev.includes(name) ? prev.filter(t => t !== name) : [...prev, name]
-    )
+    setSelectedTags(prev => {
+      // 已选则取消（如果是主标签被取消，第二个自动升为主标签）
+      if (prev.includes(name)) return prev.filter(t => t !== name)
+      // 上限 3 个，达到上限不再添加
+      if (prev.length >= 3) return prev
+      return [...prev, name]
+    })
   }
+
+  const tagLimitReached = selectedTags.length >= 3
 
   const canSubmit = content.trim().length > 0 || mood.length > 0
 
@@ -134,19 +140,30 @@ function RecordForm() {
 
       {tags && tags.length > 0 && (
         <section className="field-group">
-          <label className="field-label">分组标签</label>
+          <label className="field-label">
+            分组标签
+            <span className="field-hint">最多 3 个 · 第一个为主标签</span>
+          </label>
           <div className="picker">
-            {tags.map(t => (
-              <button
-                key={t.id}
-                className={`chip tag-chip ${selectedTags.includes(t.name) ? 'selected' : ''}`}
-                style={{ '--tag-color': t.color } as any}
-                onClick={() => toggleTag(t.name)}
-              >
-                <span className="dot" />
-                {t.name}
-              </button>
-            ))}
+            {tags.map(t => {
+              const isSelected = selectedTags.includes(t.name)
+              const isPrimary = selectedTags[0] === t.name
+              const disabled = !isSelected && tagLimitReached
+              return (
+                <button
+                  key={t.id}
+                  className={`chip tag-chip ${isSelected ? 'selected' : ''} ${isPrimary ? 'primary' : ''}`}
+                  style={{ '--tag-color': t.color } as any}
+                  onClick={() => toggleTag(t.name)}
+                  disabled={disabled}
+                >
+                  {isPrimary
+                    ? <span className="star">★</span>
+                    : <span className="dot" />}
+                  {t.name}
+                </button>
+              )
+            })}
           </div>
         </section>
       )}

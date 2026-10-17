@@ -45,6 +45,10 @@ function RecordList() {
     () => db.entries.orderBy('createdAt').reverse().toArray(),
     []
   )
+  // 拉取所有标签，用于在卡片上展示主标签的颜色
+  const allTags = useLiveQuery(() => db.tags.toArray(), [])
+  const tagColorMap: Record<string, string> = {}
+  allTags?.forEach(t => { tagColorMap[t.name] = t.color })
 
   const [activeId, setActiveId] = useState<number | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -91,7 +95,19 @@ function RecordList() {
         if (mt) tags.push(<span key="mood" className="entry-tag mood-tag">{mt}</span>)
         if (wt) tags.push(<span key="weather" className="entry-tag weather-tag">{wt}</span>)
         if (e.weekday) tags.push(<span key="weekday" className="entry-tag weekday-tag">{e.weekday}</span>)
-        if (e.tags.length > 0) tags.push(<span key="tagscount" className="entry-tag count-tag">{e.tags.length}个标签</span>)
+        if (e.tags.length > 0) {
+          const primaryName = e.tags[0]
+          const primaryColor = tagColorMap[primaryName] || '#6366f1'
+          tags.push(
+            <span
+              key="primary"
+              className="entry-tag primary-tag"
+              style={{ background: primaryColor, color: '#fff' }}
+            >
+              {primaryName}
+            </span>
+          )
+        }
 
         return (
           <article
@@ -130,9 +146,21 @@ function RecordList() {
 
             {active.tags.length > 0 && (
               <div className="modal-tag-list">
-                {active.tags.map(t => (
-                  <span key={t} className="tag-pill">{t}</span>
-                ))}
+                {active.tags.map((t, i) => {
+                  if (i === 0) {
+                    const c = tagColorMap[t] || '#6366f1'
+                    return (
+                      <span
+                        key={t}
+                        className="tag-pill tag-pill-primary"
+                        style={{ background: c, color: '#fff' }}
+                      >
+                        ★ {t}
+                      </span>
+                    )
+                  }
+                  return <span key={t} className="tag-pill">{t}</span>
+                })}
               </div>
             )}
 

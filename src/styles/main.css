@@ -111,7 +111,17 @@ button:disabled { cursor: not-allowed; opacity: 0.4; }
 .form-wrap { display: flex; flex-direction: column; gap: 20px; }
 
 .field-group { display: flex; flex-direction: column; gap: 8px; }
-.field-label { font-size: 13px; color: var(--text-dim); font-weight: 500; padding-left: 4px; }
+.field-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  font-weight: 500;
+  padding-left: 4px;
+}
+.field-hint { font-size: 11px; opacity: 0.7; font-weight: 400; }
 
 .picker { display: flex; flex-wrap: wrap; gap: 8px; }
 
@@ -156,12 +166,25 @@ button:disabled { cursor: not-allowed; opacity: 0.4; }
 
 .tag-chip { color: var(--text); }
 .tag-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tag-color, var(--primary)); }
+.tag-chip .star { font-size: 11px; color: var(--tag-color, var(--primary)); line-height: 1; }
+/* 次标签：淡色背景 + 主色文字 */
 .tag-chip.selected {
+  background: color-mix(in srgb, var(--tag-color, var(--primary)) 16%, transparent);
+  border-color: color-mix(in srgb, var(--tag-color, var(--primary)) 40%, transparent);
+  color: var(--text);
+}
+.tag-chip.selected .dot { background: var(--tag-color, var(--primary)); }
+/* 主标签（第一个被选中的）：实心填充 + 白色文字 + ★ */
+.tag-chip.primary {
   background: var(--tag-color, var(--primary));
   border-color: transparent;
   color: #fff;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--tag-color, var(--primary)) 35%, transparent);
 }
-.tag-chip.selected .dot { background: #fff; }
+.tag-chip.primary .dot { background: #fff; }
+.tag-chip.primary .star { color: #fff; }
+/* 达到上限时未选项视觉 */
+.tag-chip:disabled:not(.selected) { opacity: 0.35; }
 
 .content-input {
   width: 100%;
@@ -266,6 +289,11 @@ button:disabled { cursor: not-allowed; opacity: 0.4; }
 .weather-tag { background: rgba(56, 189, 248, 0.14); color: #7dd3fc; }
 .weekday-tag { background: rgba(99, 102, 241, 0.14); color: var(--primary-light); }
 .count-tag { background: var(--surface-2); color: var(--text-dim); }
+/* 卡片上的主标签：实心填充（颜色由内联 style 提供） */
+.primary-tag {
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
 
 .tag-pill {
   font-size: 12px;
@@ -274,6 +302,8 @@ button:disabled { cursor: not-allowed; opacity: 0.4; }
   background: rgba(99,102,241,0.12);
   color: var(--primary-light);
 }
+/* 弹窗里主标签：实心填充 + ★ 前缀 */
+.tag-pill-primary { font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
 /* ---------- 弹窗 ---------- */
 .modal-mask {
